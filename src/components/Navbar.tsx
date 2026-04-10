@@ -20,6 +20,7 @@ const navLinks = [
   { href: "/flights/search", label: "Flights" },
   { href: "/hotels/search", label: "Hotels" },
   { href: "/cabs", label: "Cabs" },
+  { href: "/guide", label: "Guide" },
   { href: "/contact", label: "Contact" },
 ];
 
