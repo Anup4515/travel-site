@@ -7,6 +7,14 @@ const nextConfig: NextConfig = {
       { protocol: "http", hostname: "**" },
     ],
   },
+  turbopack: {
+    resolveAlias: {},
+  },
+  onDemandEntries: {
+    maxInactiveAge: 60 * 1000,
+    pagesBufferLength: 5,
+  },
+  allowedDevOrigins: ['gertie-unostensible-changelessly.ngrok-free.dev'],
 };
 
 export default nextConfig;
