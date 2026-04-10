@@ -1,0 +1,26 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
+  <!-- Background circle -->
+  <circle cx="50" cy="50" r="48" fill="#1a1a1a" stroke="#FCD34D" stroke-width="4"/>
+  
+  <!-- Airplane icon -->
+  <g transform="translate(50, 50)">
+    <!-- Main body -->
+    <path d="M -2 -25 L 0 20 L 2 20 L 0 -25 Z" fill="#FCD34D"/>
+    
+    <!-- Wings -->
+    <path d="M -25 -5 L -2 -2 L -2 2 L -20 8 Z" fill="#ffffff"/>
+    <path d="M 25 -5 L 2 -2 L 2 2 L 20 8 Z" fill="#ffffff"/>
+    
+    <!-- Tail wings -->
+    <path d="M -10 15 L -2 13 L -2 15 L -8 18 Z" fill="#ffffff"/>
+    <path d="M 10 15 L 2 13 L 2 15 L 8 18 Z" fill="#ffffff"/>
+    
+    <!-- Cockpit window -->
+    <circle cx="0" cy="-18" r="3" fill="#1a1a1a"/>
+  </g>
+  
+  <!-- Small star accents -->
+  <circle cx="20" cy="20" r="1.5" fill="#FCD34D"/>
+  <circle cx="80" cy="30" r="1.5" fill="#FCD34D"/>
+  <circle cx="75" cy="75" r="1.5" fill="#FCD34D"/>
+</svg>
