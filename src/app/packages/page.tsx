@@ -25,7 +25,6 @@ const categories = [
   { key: "heritage", label: "Heritage" },
   { key: "adventure", label: "Adventure" },
   { key: "spiritual", label: "Spiritual" },
-  { key: "beach", label: "Beach" },
   { key: "cultural", label: "Cultural" },
 ];
 

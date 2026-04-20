@@ -5,7 +5,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { Save, Plus, X } from "lucide-react";
 import toast from "react-hot-toast";
 
-const categories = ["golden-triangle", "heritage", "adventure", "spiritual", "beach", "mountain", "cultural", "wildlife"];
+const categories = ["golden-triangle", "heritage", "adventure", "spiritual", "mountain", "cultural", "wildlife"];
 const difficulties = ["easy", "moderate", "challenging"];
 
 function PackageForm() {

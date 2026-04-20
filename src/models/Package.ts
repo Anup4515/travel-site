@@ -37,7 +37,7 @@ const packageSchema = new Schema(
     shortDescription: { type: String },
     category: {
       type: String,
-      enum: ["golden-triangle", "heritage", "adventure", "spiritual", "beach", "mountain", "cultural", "wildlife"],
+      enum: ["golden-triangle", "heritage", "adventure", "spiritual", "mountain", "cultural", "wildlife"],
       default: "cultural",
     },
     difficulty: { type: String, enum: ["easy", "moderate", "challenging"], default: "easy" },
