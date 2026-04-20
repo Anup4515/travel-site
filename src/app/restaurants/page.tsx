@@ -37,30 +37,30 @@ export default function RestaurantsPage() {
   };
 
   return (
-    <div className="min-h-screen pt-24 pb-16 px-6 bg-gray-50 dark:bg-gray-950">
+    <div className="min-h-screen pt-32 pb-16 px-4 sm:px-6 bg-gray-50 dark:bg-gray-950">
       <div className="max-w-6xl mx-auto">
-        <h1 className="text-3xl font-bold mb-2">Find Restaurants</h1>
-        <p className="text-gray-500 dark:text-gray-400 mb-8">Discover the best places to eat across Delhi, Agra, and Jaipur</p>
+        <h1 className="text-2xl sm:text-3xl font-bold mb-2">Find Restaurants</h1>
+        <p className="text-sm sm:text-base text-gray-500 dark:text-gray-400 mb-6 sm:mb-8">Discover the best places to eat across Delhi, Agra, and Jaipur</p>
 
-        <form onSubmit={handleSearch} className="bg-white dark:bg-gray-900 rounded-2xl p-6 shadow-lg mb-8">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <form onSubmit={handleSearch} className="bg-white dark:bg-gray-900 rounded-2xl p-4 sm:p-6 shadow-lg mb-6 sm:mb-8">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4">
             <div>
-              <label className="block text-sm font-medium mb-1">City</label>
+              <label className="block text-xs sm:text-sm font-medium mb-1">City</label>
               <select value={city} onChange={(e) => { setCity(e.target.value); setDish(""); }} className="w-full px-4 py-3 rounded-xl border border-gray-300 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 outline-none focus:ring-2 focus:ring-blue-500">
                 <option value="">Select City</option>
                 {cities.map((c) => <option key={c} value={c}>{c}</option>)}
               </select>
             </div>
             <div>
-              <label className="block text-sm font-medium mb-1">Dish / Cuisine</label>
+              <label className="block text-xs sm:text-sm font-medium mb-1">Dish / Cuisine</label>
               <select value={dish} onChange={(e) => setDish(e.target.value)} className="w-full px-4 py-3 rounded-xl border border-gray-300 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 outline-none focus:ring-2 focus:ring-blue-500">
                 <option value="">Select Dish</option>
                 {city && popularDishes[city]?.map((d) => <option key={d} value={d}>{d}</option>)}
               </select>
             </div>
             <div className="flex items-end">
-              <button type="submit" disabled={loading} className="w-full bg-blue-500 dark:bg-yellow-400 text-white dark:text-black py-3 rounded-xl font-semibold hover:opacity-90 transition flex items-center justify-center gap-2">
-                <Search size={18} />{loading ? "Searching..." : "Search"}
+              <button type="submit" disabled={loading} className="w-full bg-blue-500 dark:bg-yellow-400 text-white dark:text-black py-2 sm:py-3 rounded-xl font-semibold hover:opacity-90 transition flex items-center justify-center gap-2 text-sm sm:text-base">
+                <Search size={16} className="sm:w-[18px]" />{loading ? "Searching..." : "Search"}
               </button>
             </div>
           </div>
@@ -70,7 +70,7 @@ export default function RestaurantsPage() {
           {restaurants.map((r, i) => (
             <div key={i} className="bg-white dark:bg-gray-900 rounded-xl overflow-hidden shadow-sm hover:shadow-lg transition flex flex-col sm:flex-row">
               <div className="relative w-full sm:w-48 h-48 sm:h-auto shrink-0">
-                <Image src={r.photo} alt={r.name} fill className="object-cover" />
+                <Image src={r.photo} alt={r.name} fill sizes="(max-width: 640px) 100vw, 192px" className="object-cover" />
                 {r.isOpen !== null && (
                   <div className={`absolute top-2 left-2 px-2 py-1 rounded-full text-xs font-bold ${r.isOpen ? "bg-green-500 text-white" : "bg-red-500 text-white"}`}>
                     {r.isOpen ? "Open" : "Closed"}

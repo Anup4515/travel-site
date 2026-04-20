@@ -24,14 +24,18 @@ export async function GET(req: NextRequest) {
       if (category) query.category = category;
       if (featured === "true") query.featured = true;
       const pkgs = await Package.find(query).sort({ featured: -1, price: 1 });
-      return NextResponse.json(pkgs);
+      const response = NextResponse.json(pkgs);
+      response.headers.set("Cache-Control", "no-store, must-revalidate");
+      return response;
     }
 
     let results = [...mockPackages];
     if (city) results = results.filter((p) => p.destination.toLowerCase().includes(city.toLowerCase()) || p.cities.some((c) => c.toLowerCase().includes(city.toLowerCase())));
     if (category) results = results.filter((p) => p.category === category);
     if (featured === "true") results = results.filter((p) => p.featured);
-    return NextResponse.json(results);
+    const response = NextResponse.json(results);
+    response.headers.set("Cache-Control", "no-store, must-revalidate");
+    return response;
   } catch {
     return NextResponse.json({ error: "Failed to search packages" }, { status: 500 });
   }

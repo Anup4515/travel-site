@@ -68,6 +68,18 @@ export interface IItineraryItem {
   travel?: string;
 }
 
+export interface IReview {
+  _id?: string;
+  userId: string;
+  userName: string;
+  userEmail?: string;
+  rating: number;
+  title: string;
+  comment: string;
+  createdAt?: string | Date;
+  helpful?: number;
+}
+
 export interface IPackage {
   _id: string;
   packageId: string;
@@ -85,10 +97,12 @@ export interface IPackage {
   category: string;
   difficulty?: string;
   bestFor?: string;
+  discount?: number;
   included?: string[];
   excluded?: string[];
   itinerary: IItineraryItem[];
   highlights?: string[];
+  reviews?: IReview[];
   featured?: boolean;
   active?: boolean;
 }

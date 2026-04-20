@@ -20,17 +20,12 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
           const email = (credentials.email as string).toLowerCase().trim();
           const password = credentials.password as string;
 
-          console.log("[AUTH] Login attempt for:", email);
-          console.log("[AUTH] Admin email from env:", process.env.ADMIN_EMAIL);
-          console.log("[AUTH] Is admin?", email === process.env.ADMIN_EMAIL && password === process.env.ADMIN_PASSWORD);
-
           // Check for admin credentials
           if (
             email === process.env.ADMIN_EMAIL &&
             password === process.env.ADMIN_PASSWORD
           ) {
             let adminUser = await User.findOne({ email });
-            console.log("[AUTH] Existing admin user found:", !!adminUser);
 
             if (!adminUser) {
               adminUser = await User.create({
@@ -40,11 +35,9 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
                 role: "admin",
                 authMethod: "email",
               });
-              console.log("[AUTH] Created new admin user");
             } else if (adminUser.role !== "admin") {
               adminUser.role = "admin";
               await adminUser.save();
-              console.log("[AUTH] Promoted user to admin");
             }
 
             return {
@@ -57,12 +50,10 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
 
           const user = await User.findOne({ email });
           if (!user || !user.password) {
-            console.log("[AUTH] User not found or no password");
             return null;
           }
 
           const isMatch = await user.comparePassword(password);
-          console.log("[AUTH] Password match:", isMatch);
           if (!isMatch) return null;
 
           return {

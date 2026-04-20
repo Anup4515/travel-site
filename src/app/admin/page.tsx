@@ -36,12 +36,15 @@ export default function AdminDashboard() {
     cab: <Car size={16} className="text-orange-500" />,
   };
 
+  const bookingBreakdown = stats?.bookingBreakdown ?? { flights: 0, hotels: 0, packages: 0, cabs: 0 };
+  const recentBookings = stats?.recentBookings ?? [];
+
   return (
     <div>
-      <h1 className="text-3xl font-bold mb-8">Dashboard</h1>
+      <h1 className="text-2xl sm:text-3xl font-bold mb-6 sm:mb-8">Dashboard</h1>
 
       {/* Stats Cards */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-10">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 mb-8 sm:mb-10">
         {cards.map((c) => (
           <div key={c.label} className="bg-white dark:bg-gray-900 rounded-2xl p-6 shadow-sm">
             <div className="flex items-center justify-between mb-4">
@@ -59,10 +62,10 @@ export default function AdminDashboard() {
           <h2 className="text-lg font-bold mb-4">Booking Breakdown</h2>
           <div className="space-y-4">
             {[
-              { label: "Flights", count: stats?.bookingBreakdown.flights || 0, icon: Plane, color: "bg-blue-500" },
-              { label: "Hotels", count: stats?.bookingBreakdown.hotels || 0, icon: Building2, color: "bg-purple-500" },
-              { label: "Packages", count: stats?.bookingBreakdown.packages || 0, icon: MapPin, color: "bg-green-500" },
-              { label: "Cabs", count: stats?.bookingBreakdown.cabs || 0, icon: Car, color: "bg-orange-500" },
+              { label: "Flights", count: bookingBreakdown.flights, icon: Plane, color: "bg-blue-500" },
+              { label: "Hotels", count: bookingBreakdown.hotels, icon: Building2, color: "bg-purple-500" },
+              { label: "Packages", count: bookingBreakdown.packages, icon: MapPin, color: "bg-green-500" },
+              { label: "Cabs", count: bookingBreakdown.cabs, icon: Car, color: "bg-orange-500" },
             ].map((item) => (
               <div key={item.label} className="flex items-center justify-between">
                 <div className="flex items-center gap-3">
@@ -84,8 +87,8 @@ export default function AdminDashboard() {
         <div className="bg-white dark:bg-gray-900 rounded-2xl p-6 shadow-sm">
           <h2 className="text-lg font-bold mb-4">Recent Bookings</h2>
           <div className="space-y-3">
-            {stats?.recentBookings.length === 0 && <p className="text-gray-500 text-sm">No bookings yet</p>}
-            {stats?.recentBookings.map((b) => (
+            {recentBookings.length === 0 && <p className="text-gray-500 text-sm">No bookings yet</p>}
+            {recentBookings.map((b) => (
               <div key={b._id} className="flex items-center justify-between py-2 border-b border-gray-100 dark:border-gray-800 last:border-0">
                 <div className="flex items-center gap-3">
                   {typeIcons[b.type]}

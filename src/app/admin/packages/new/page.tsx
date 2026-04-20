@@ -13,9 +13,17 @@ function PackageForm() {
   const searchParams = useSearchParams();
   const editId = searchParams.get("edit");
   const [loading, setLoading] = useState(false);
-  const [form, setForm] = useState({
-    name: "", destination: "", cities: [""], image: "", duration: "", durationDays: 3, durationNights: 2,
-    price: 0, description: "", category: "cultural", difficulty: "easy", bestFor: "",
+  interface FormState {
+    name: string; destination: string; cities: string[]; image: string; images: string[]; duration: string; 
+    durationDays: number; durationNights: number; price: number; description: string; category: string; 
+    difficulty: string; bestFor: string; discount: number;
+    included: string[]; excluded: string[]; highlights: string[];
+    itinerary: { day: number; title: string; description: string; highlights: string[] }[];
+    featured: boolean;
+  }
+  const [form, setForm] = useState<FormState>({
+    name: "", destination: "", cities: [""], image: "", images: [""], duration: "", durationDays: 3, durationNights: 2,
+    price: 0, description: "", category: "cultural", difficulty: "easy", bestFor: "", discount: 0,
     included: [""], excluded: [""], highlights: [""],
     itinerary: [{ day: 1, title: "", description: "", highlights: [""] }],
     featured: false,
@@ -28,9 +36,9 @@ function PackageForm() {
         if (pkg) {
           setForm({
             name: pkg.name || "", destination: pkg.destination || "", cities: pkg.cities?.length ? pkg.cities : [""],
-            image: pkg.image || "", duration: pkg.duration || "", durationDays: pkg.durationDays || 3, durationNights: pkg.durationNights || 2,
+            image: pkg.image || "", images: pkg.images?.length ? pkg.images : [""], duration: pkg.duration || "", durationDays: pkg.durationDays || 3, durationNights: pkg.durationNights || 2,
             price: pkg.price || 0, description: pkg.description || "", category: pkg.category || "cultural",
-            difficulty: pkg.difficulty || "easy", bestFor: pkg.bestFor || "",
+            difficulty: pkg.difficulty || "easy", bestFor: pkg.bestFor || "", discount: Number(pkg.discount) || 0,
             included: pkg.included?.length ? pkg.included : [""], excluded: pkg.excluded?.length ? pkg.excluded : [""],
             highlights: pkg.highlights?.length ? pkg.highlights : [""],
             itinerary: pkg.itinerary?.length ? pkg.itinerary.map((d: { day: number; title: string; description: string; highlights?: string[] }) => ({ ...d, highlights: d.highlights?.length ? d.highlights : [""] })) : [{ day: 1, title: "", description: "", highlights: [""] }],
@@ -51,10 +59,13 @@ function PackageForm() {
       const body = {
         ...form,
         cities: form.cities.filter(Boolean),
+        images: form.images.filter(Boolean),
         included: form.included.filter(Boolean),
         excluded: form.excluded.filter(Boolean),
         highlights: form.highlights.filter(Boolean),
-        itinerary: form.itinerary.map((d) => ({ ...d, highlights: d.highlights.filter(Boolean) })),
+        itinerary: form.itinerary
+          .filter((d) => d.title?.trim() && d.description?.trim())
+          .map((d, index) => ({ ...d, day: index + 1, highlights: d.highlights.filter(Boolean) })),
         duration: form.duration || `${form.durationDays} Days / ${form.durationNights} Nights`,
       };
 
@@ -67,13 +78,13 @@ function PackageForm() {
     } catch { toast.error("Something went wrong"); } finally { setLoading(false); }
   };
 
-  const addListItem = (field: "cities" | "included" | "excluded" | "highlights") => {
+  const addListItem = (field: "cities" | "included" | "excluded" | "highlights" | "images") => {
     setForm({ ...form, [field]: [...form[field], ""] });
   };
-  const updateListItem = (field: "cities" | "included" | "excluded" | "highlights", index: number, value: string) => {
+  const updateListItem = (field: "cities" | "included" | "excluded" | "highlights" | "images", index: number, value: string) => {
     const arr = [...form[field]]; arr[index] = value; setForm({ ...form, [field]: arr });
   };
-  const removeListItem = (field: "cities" | "included" | "excluded" | "highlights", index: number) => {
+  const removeListItem = (field: "cities" | "included" | "excluded" | "highlights" | "images", index: number) => {
     setForm({ ...form, [field]: form[field].filter((_, i) => i !== index) });
   };
 
@@ -123,6 +134,10 @@ function PackageForm() {
               <select value={form.difficulty} onChange={(e) => setForm({ ...form, difficulty: e.target.value })} className="w-full px-4 py-3 rounded-xl border border-gray-300 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 outline-none">
                 {difficulties.map((d) => <option key={d} value={d}>{d}</option>)}
               </select>
+            </div>
+            <div>
+              <label className="block text-sm font-medium mb-1">Discount (%)</label>
+              <input type="number" value={form.discount ?? 0} onChange={(e) => setForm({ ...form, discount: isNaN(e.target.valueAsNumber) ? 0 : Math.max(0, Math.min(100, e.target.valueAsNumber)) })} min={0} max={100} className="w-full px-4 py-3 rounded-xl border border-gray-300 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 outline-none" />
             </div>
             <div>
               <label className="block text-sm font-medium mb-1">Days</label>
@@ -202,6 +217,18 @@ function PackageForm() {
               </div>
               <input type="text" value={day.title} onChange={(e) => updateDay(i, "title", e.target.value)} className="w-full px-4 py-2 rounded-xl border border-gray-300 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 outline-none text-sm" placeholder="Day title" />
               <textarea value={day.description} onChange={(e) => updateDay(i, "description", e.target.value)} rows={2} className="w-full px-4 py-2 rounded-xl border border-gray-300 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 outline-none text-sm resize-none" placeholder="Day description" />
+            </div>
+          ))}
+        </div>
+
+        {/* Images */}
+        <div className="bg-white dark:bg-gray-900 rounded-2xl p-6 shadow-sm space-y-3">
+          <div className="flex justify-between items-center"><h2 className="text-lg font-bold">Gallery Images</h2><button type="button" onClick={() => addListItem("images")} className="text-red-500 text-sm flex items-center gap-1"><Plus size={14} />Add Image</button></div>
+          <p className="text-sm text-gray-500 dark:text-gray-400">Add multiple images for the package gallery</p>
+          {form.images.map((img, i) => (
+            <div key={i} className="flex gap-2">
+              <input type="text" value={img} onChange={(e) => updateListItem("images", i, e.target.value)} className="flex-1 px-4 py-2 rounded-xl border border-gray-300 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 outline-none text-sm" placeholder="Image URL" />
+              {form.images.length > 1 && <button type="button" onClick={() => removeListItem("images", i)} className="text-red-400"><X size={16} /></button>}
             </div>
           ))}
         </div>

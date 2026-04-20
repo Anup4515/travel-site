@@ -10,6 +10,17 @@ const itineraryItemSchema = new Schema({
   travel: { type: String },
 });
 
+const reviewSchema = new Schema({
+  userId: { type: String, required: true },
+  userName: { type: String, required: true },
+  userEmail: { type: String },
+  rating: { type: Number, required: true, min: 1, max: 5 },
+  title: { type: String, required: true },
+  comment: { type: String, required: true },
+  helpful: { type: Number, default: 0 },
+  createdAt: { type: Date, default: Date.now },
+});
+
 const packageSchema = new Schema(
   {
     packageId: { type: String, required: true, unique: true },
@@ -31,10 +42,12 @@ const packageSchema = new Schema(
     },
     difficulty: { type: String, enum: ["easy", "moderate", "challenging"], default: "easy" },
     bestFor: { type: String },
+    discount: { type: Number, default: 0, min: 0, max: 100 },
     included: [{ type: String }],
     excluded: [{ type: String }],
     itinerary: [itineraryItemSchema],
     highlights: [{ type: String }],
+    reviews: [reviewSchema],
     featured: { type: Boolean, default: false },
     active: { type: Boolean, default: true },
   },

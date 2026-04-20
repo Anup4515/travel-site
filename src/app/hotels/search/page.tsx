@@ -13,6 +13,7 @@ interface Hotel {
 }
 
 export default function HotelSearchPage() {
+  const today = new Date().toISOString().split("T")[0];
   const [city, setCity] = useState("");
   const [checkIn, setCheckIn] = useState("");
   const [checkOut, setCheckOut] = useState("");
@@ -55,31 +56,31 @@ export default function HotelSearchPage() {
   };
 
   return (
-    <div className="min-h-screen pt-24 pb-16 px-6 bg-gray-50 dark:bg-gray-950">
+    <div className="min-h-screen pt-32 pb-16 px-6 bg-gray-50 dark:bg-gray-950">
       <div className="max-w-6xl mx-auto">
         <h1 className="text-3xl font-bold mb-8">Search Hotels</h1>
 
-        <form onSubmit={handleSearch} className="bg-white dark:bg-gray-900 rounded-2xl p-6 shadow-lg mb-8">
-          <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
+        <form onSubmit={handleSearch} className="bg-white dark:bg-gray-900 rounded-2xl p-4 sm:p-6 shadow-lg mb-8">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3 sm:gap-4">
             <div>
-              <label className="block text-sm font-medium mb-1">City</label>
-              <input type="text" value={city} onChange={(e) => setCity(e.target.value)} placeholder="Jaipur" className="w-full px-4 py-3 rounded-xl border border-gray-300 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 outline-none focus:ring-2 focus:ring-blue-500" />
+              <label className="block text-xs sm:text-sm font-medium mb-1">City</label>
+              <input type="text" value={city} onChange={(e) => setCity(e.target.value)} placeholder="Jaipur" className="w-full px-3 sm:px-4 py-2 sm:py-3 text-sm rounded-xl border border-gray-300 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 outline-none focus:ring-2 focus:ring-blue-500" />
             </div>
             <div>
-              <label className="block text-sm font-medium mb-1">Check-in</label>
-              <input type="date" value={checkIn} onChange={(e) => setCheckIn(e.target.value)} className="w-full px-4 py-3 rounded-xl border border-gray-300 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 outline-none focus:ring-2 focus:ring-blue-500" />
+              <label className="block text-xs sm:text-sm font-medium mb-1">Check-in</label>
+              <input type="date" min={today} value={checkIn} onChange={(e) => setCheckIn(e.target.value)} className="w-full px-3 sm:px-4 py-2 sm:py-3 text-sm rounded-xl border border-gray-300 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 outline-none focus:ring-2 focus:ring-blue-500" />
             </div>
             <div>
-              <label className="block text-sm font-medium mb-1">Check-out</label>
-              <input type="date" value={checkOut} onChange={(e) => setCheckOut(e.target.value)} className="w-full px-4 py-3 rounded-xl border border-gray-300 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 outline-none focus:ring-2 focus:ring-blue-500" />
+              <label className="block text-xs sm:text-sm font-medium mb-1">Check-out</label>
+              <input type="date" min={today} value={checkOut} onChange={(e) => setCheckOut(e.target.value)} className="w-full px-3 sm:px-4 py-2 sm:py-3 text-sm rounded-xl border border-gray-300 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 outline-none focus:ring-2 focus:ring-blue-500" />
             </div>
             <div>
-              <label className="block text-sm font-medium mb-1">Guests</label>
-              <input type="number" value={guests} onChange={(e) => setGuests(parseInt(e.target.value) || 1)} min={1} className="w-full px-4 py-3 rounded-xl border border-gray-300 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 outline-none focus:ring-2 focus:ring-blue-500" />
+              <label className="block text-xs sm:text-sm font-medium mb-1\">Guests</label>
+              <input type="number" value={guests} onChange={(e) => setGuests(parseInt(e.target.value) || 1)} min={1} className="w-full px-3 sm:px-4 py-2 sm:py-3 text-sm rounded-xl border border-gray-300 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 outline-none focus:ring-2 focus:ring-blue-500" />
             </div>
             <div className="flex items-end">
-              <button type="submit" disabled={loading} className="w-full bg-blue-500 dark:bg-yellow-400 text-white dark:text-black py-3 rounded-xl font-semibold hover:opacity-90 transition flex items-center justify-center gap-2">
-                <Search size={18} />{loading ? "Searching..." : "Search"}
+              <button type="submit" disabled={loading} className="w-full bg-blue-500 dark:bg-yellow-400 text-white dark:text-black py-2 sm:py-3 rounded-xl font-semibold hover:opacity-90 transition flex items-center justify-center gap-2 text-sm sm:text-base">
+                <Search size={16} className="sm:w-[18px]" />{loading ? "Searching..." : "Search"}
               </button>
             </div>
           </div>
@@ -89,7 +90,7 @@ export default function HotelSearchPage() {
           {hotels.map((h) => (
             <div key={h._id} className="bg-white dark:bg-gray-900 rounded-2xl overflow-hidden shadow-sm hover:shadow-lg transition group">
               <div className="relative h-48">
-                <Image src={h.image || "/images/mumbai2.jpg"} alt={h.name} fill className="object-cover group-hover:scale-105 transition-transform duration-500" />
+                <Image src={h.image || "/images/mumbai2.jpg"} alt={h.name} fill sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 33vw" className="object-cover group-hover:scale-105 transition-transform duration-500" />
                 <div className="absolute top-3 right-3 bg-yellow-400 text-black px-2 py-1 rounded-full text-sm font-bold flex items-center gap-1"><Star size={12} />{h.rating}</div>
               </div>
               <div className="p-5">

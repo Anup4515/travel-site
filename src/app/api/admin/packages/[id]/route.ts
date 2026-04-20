@@ -12,7 +12,18 @@ export async function PUT(req: NextRequest, { params }: { params: Promise<{ id: 
     await dbConnect();
     const { id } = await params;
     const body = await req.json();
-    const pkg = await Package.findByIdAndUpdate(id, body, { new: true, runValidators: true });
+    
+    // Ensure discount is a number
+    if (body.discount !== undefined) {
+      body.discount = Number(body.discount);
+    }
+    
+    const pkg = await Package.findByIdAndUpdate(
+      id, 
+      { $set: body },
+      { new: true, runValidators: true }
+    );
+    
     if (!pkg) return NextResponse.json({ error: "Package not found" }, { status: 404 });
     return NextResponse.json(pkg);
   } catch (error) {

@@ -3,6 +3,7 @@ import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
+import WhatsAppFloat from "@/components/WhatsAppFloat";
 import { ThemeProvider } from "@/context/ThemeContext";
 import AuthProvider from "@/context/AuthProvider";
 import { Toaster } from "react-hot-toast";
@@ -21,14 +22,16 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     <html lang="en" suppressHydrationWarning>
       <head>
         <script dangerouslySetInnerHTML={{ __html: `(function(){try{var t=localStorage.getItem('aureo-theme')||'light';if(t==='dark')document.documentElement.classList.add('dark');}catch(e){}})();` }} />
+        <link rel="icon" href="/favicon.svg" />
       </head>
       <body className={`${geistSans.variable} ${geistMono.variable} antialiased bg-white dark:bg-black text-gray-900 dark:text-white transition-colors duration-300`}>
         <AuthProvider>
           <ThemeProvider>
             <Navbar />
-            <main className="min-h-screen">{children}</main>
+            <main className="min-h-screen w-full max-w-full overflow-x-hidden">{children}</main>
             <Footer />
             <Toaster position="top-right" toastOptions={{ duration: 4000, style: { background: "#1f2937", color: "#fff", borderRadius: "12px" } }} />
+            <WhatsAppFloat />
           </ThemeProvider>
         </AuthProvider>
       </body>
