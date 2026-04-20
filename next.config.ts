@@ -6,6 +6,7 @@ const nextConfig: NextConfig = {
       { protocol: "https", hostname: "**" },
       { protocol: "http", hostname: "**" },
     ],
+    unoptimized: true, // Disable optimization for external images to avoid 404 errors during build
   },
   turbopack: {
     resolveAlias: {},

@@ -82,7 +82,9 @@ export async function POST(req: NextRequest) {
         } else {
           bookingData = { packageName, destination, startDate, travelers, price };
         }
+        console.log("Package booking data:", bookingData);
         booking = await PackageBooking.create({ userId, ...bookingData });
+        console.log("Package booking created:", booking);
         break;
       }
       case "cab": {
@@ -103,7 +105,100 @@ export async function POST(req: NextRequest) {
     }
 
     return NextResponse.json(booking, { status: 201 });
+  } catch (error) {
+    console.error("Booking error:", error);
+    return NextResponse.json({ error: "Failed to create booking", details: (error as Error).message }, { status: 500 });
+  }
+}
+
+export async function DELETE(req: NextRequest) {
+  try {
+    const session = await auth();
+    if (!session?.user?.id) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+
+    await dbConnect();
+    const userId = session.user.id;
+    const { searchParams } = new URL(req.url);
+    const bookingId = searchParams.get("id");
+    const type = searchParams.get("type");
+
+    if (!bookingId || !type) {
+      return NextResponse.json({ error: "Missing booking ID or type" }, { status: 400 });
+    }
+
+    let booking;
+    const BookingModel = 
+      type === "flight" ? FlightBooking :
+      type === "hotel" ? HotelBooking :
+      type === "package" ? PackageBooking :
+      type === "cab" ? CabBooking :
+      null;
+
+    if (!BookingModel) {
+      return NextResponse.json({ error: "Invalid booking type" }, { status: 400 });
+    }
+
+    booking = await BookingModel.findById(bookingId);
+    if (!booking) {
+      return NextResponse.json({ error: "Booking not found" }, { status: 404 });
+    }
+
+    if (booking.userId.toString() !== userId) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 403 });
+    }
+
+    if (booking.status === "cancelled") {
+      return NextResponse.json({ error: "Booking already cancelled" }, { status: 400 });
+    }
+
+    // Calculate refund based on cancellation policy
+    const createdAt = new Date(booking.createdAt);
+    const now = new Date();
+    const daysElapsed = Math.floor((now.getTime() - createdAt.getTime()) / (1000 * 60 * 60 * 24));
+    
+    let refundPercentage = 0;
+    let refundReason = "";
+
+    if (daysElapsed <= 7) {
+      // Within 7 days: 100% refund
+      refundPercentage = 100;
+      refundReason = "Full refund - cancelled within 7 days";
+    } else if (daysElapsed <= 14) {
+      // Within 7-14 days: 50% refund
+      refundPercentage = 50;
+      refundReason = "50% refund - cancelled within 14 days";
+    } else if (daysElapsed <= 30) {
+      // Within 14-30 days: 50% refund
+      refundPercentage = 50;
+      refundReason = "50% refund - cancelled within 30 days";
+    } else {
+      // After 30 days: No refund
+      refundPercentage = 0;
+      refundReason = "No refund - cancelled after 30 days";
+    }
+
+    const refundAmount = Math.round((booking.price * refundPercentage) / 100);
+
+    // Update booking status
+    booking.status = "cancelled";
+    booking.refundAmount = refundAmount;
+    booking.refundReason = refundReason;
+    booking.cancelledAt = new Date();
+
+    await booking.save();
+
+    return NextResponse.json({ 
+      booking, 
+      refund: { 
+        amount: refundAmount, 
+        percentage: refundPercentage, 
+        reason: refundReason,
+        originalPrice: booking.price
+      } 
+    });
   } catch {
-    return NextResponse.json({ error: "Failed to create booking" }, { status: 500 });
+    return NextResponse.json({ error: "Failed to cancel booking" }, { status: 500 });
   }
 }

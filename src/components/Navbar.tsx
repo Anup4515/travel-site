@@ -4,7 +4,8 @@ import { useState, useEffect, useRef } from "react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useSession, signOut } from "next-auth/react";
-import { Menu, X, Plane, User, ChevronDown, ChevronRight, LogOut, Briefcase, UserCircle, Sun, Moon, Shield } from "lucide-react";
+import Image from "next/image";
+import { Menu, X, User, ChevronDown, ChevronRight, LogOut, Briefcase, UserCircle, Sun, Moon, Shield, MapPin, Landmark } from "lucide-react";
 import { useTheme } from "@/context/ThemeContext";
 
 type Category = "rajasthan" | "goldenTriangle";
@@ -33,6 +34,7 @@ export default function Navbar() {
   const pathname = usePathname();
   const router = useRouter();
   const profileRef = useRef<HTMLDivElement>(null);
+  const destRef = useRef<NodeJS.Timeout | null>(null);
   const { data: session } = useSession();
   const { theme, toggleTheme } = useTheme();
 
@@ -67,15 +69,43 @@ export default function Navbar() {
     ? user.name.trim().split(/\s+/).slice(0, 2).map((p) => p[0]?.toUpperCase() || "").join("")
     : "";
 
+  const navbarIconLight = "/images/icons/icon-light.png";
+  const navbarIconDark = "/images/icons/icon-dark.png";
+
   return (
-    <nav className={`fixed w-full top-0 z-50 transition-all duration-300 ${scrolled ? "bg-black/95 shadow-lg backdrop-blur-md" : "bg-black/90 backdrop-blur-sm"}`}>
-      <div className="max-w-7xl mx-auto px-4 md:px-6 py-3 flex justify-between items-center gap-4">
-        <Link href="/" className="text-xl md:text-2xl font-bold flex items-center gap-2 shrink-0">
-          <Plane className="text-blue-400 dark:text-yellow-400 transition-colors" size={24} />
-          <span className="hidden sm:inline">
-            <span className="text-white">Aureo</span>
-            <span className="text-blue-400 dark:text-yellow-400 transition-colors">Travels</span>
-          </span>
+    <nav className={`fixed w-full top-0 z-50 transition-all duration-300 ${scrolled ? "bg-black shadow-lg backdrop-blur-md" : "bg-black backdrop-blur-sm"}`}>
+      <div className="max-w-7xl mx-auto px-4 md:px-6 py-4 flex justify-between items-center gap-6">
+        <Link href="/" className="shrink-0 flex items-center gap-4 hover:opacity-90 transition-opacity">
+          {/* Icon */}
+          <div className="relative h-16 w-16 md:h-20 md:w-20 shrink-0">
+            <Image
+              src={navbarIconLight}
+              alt="AureoTravels icon"
+              fill
+              priority
+              sizes="(max-width: 768px) 4rem, 5rem"
+              className="object-contain block dark:hidden"
+            />
+            <Image
+              src={navbarIconDark}
+              alt="AureoTravels icon"
+              fill
+              priority
+              sizes="(max-width: 768px) 4rem, 5rem"
+              className="object-contain hidden dark:block"
+            />
+          </div>
+          {/* Branding text */}
+          <div className="hidden sm:flex flex-col leading-tight">
+            <div className="text-2xl md:text-3xl font-bold">
+              <span className="text-white">Aureo</span>
+              <span className="text-blue-400 dark:text-yellow-400">Travels</span>
+            </div>
+            <div className="text-sm text-gray-400 dark:text-gray-500">
+              <span>EXPLORE MORE. </span>
+              <span className="text-blue-400 dark:text-yellow-400">TRAVEL BETTER.</span>
+            </div>
+          </div>
         </Link>
 
         {/* Desktop Menu */}
@@ -85,27 +115,44 @@ export default function Navbar() {
           </li>
 
           {/* Destinations Dropdown */}
-          <li className="relative py-2" onMouseEnter={() => setDestOpen(true)} onMouseLeave={() => { setTimeout(() => { setDestOpen(false); setHoveredCategory(null); }, 150); }}>
+          <li className="relative py-2" onMouseEnter={() => { if (destRef.current) clearTimeout(destRef.current); setDestOpen(true); }} onMouseLeave={() => { destRef.current = setTimeout(() => { setDestOpen(false); setHoveredCategory(null); }, 400); }}>
             <div className="flex items-center gap-1 cursor-pointer hover:text-blue-400 dark:hover:text-yellow-400 transition-colors">
               <span>Destinations</span>
-              <ChevronDown size={16} />
+              <ChevronDown size={16} className={`transition-transform ${destOpen ? "rotate-180" : ""}`} />
             </div>
             {destOpen && (
-              <div className="absolute top-full left-0 mt-0 pt-2 flex bg-white dark:bg-gray-900 shadow-2xl rounded-xl overflow-hidden border border-gray-200 dark:border-gray-700 z-50">
-                <div className="w-48 border-r border-gray-200 dark:border-gray-700">
+              <div className="absolute top-full left-0 mt-2 max-w-[calc(100vw-2rem)] flex flex-col sm:flex-row gap-0 bg-white dark:bg-gray-900 shadow-2xl rounded-2xl overflow-hidden border border-gray-200 dark:border-gray-700 z-50">
+                {/* Categories */}
+                <div className="w-full sm:w-56 bg-linear-to-b from-gray-50 to-white dark:from-gray-800 dark:to-gray-900 border-r-0 sm:border-r border-b sm:border-b-0 border-gray-200 dark:border-gray-700 py-4">
+                  <p className="text-xs font-bold text-gray-500 dark:text-gray-400 px-6 mb-3 uppercase tracking-wide">Categories</p>
                   {(["rajasthan", "goldenTriangle"] as Category[]).map((cat) => (
                     <div key={cat} onMouseEnter={() => setHoveredCategory(cat)}
-                      className={`flex justify-between items-center px-4 py-3 cursor-pointer transition-colors ${hoveredCategory === cat ? "bg-blue-500 dark:bg-yellow-400 text-white dark:text-black" : "text-gray-800 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800"}`}>
-                      <span>{cat === "rajasthan" ? "Rajasthan" : "Golden Triangle"}</span>
-                      <ChevronRight size={16} />
+                      className={`relative flex items-center justify-between px-6 py-3 cursor-pointer transition-all duration-200 ${hoveredCategory === cat ? "bg-blue-50 dark:bg-blue-900/30" : "hover:bg-gray-100 dark:hover:bg-gray-800"}`}>
+                      <div className="flex items-center gap-3">
+                        <div className={`p-2 rounded-lg transition-all ${hoveredCategory === cat ? "bg-blue-500 dark:bg-yellow-400" : "bg-gray-200 dark:bg-gray-700"}`}>
+                          {cat === "rajasthan" ? <MapPin size={18} className={hoveredCategory === cat ? "text-white dark:text-black" : "text-gray-600 dark:text-gray-300"} /> : <Landmark size={18} className={hoveredCategory === cat ? "text-white dark:text-black" : "text-gray-600 dark:text-gray-300"} />}
+                        </div>
+                        <div>
+                          <p className={`font-semibold text-sm ${hoveredCategory === cat ? "text-blue-600 dark:text-yellow-400" : "text-gray-800 dark:text-gray-200"}`}>{cat === "rajasthan" ? "Rajasthan" : "Golden Triangle"}</p>
+                          <p className="text-xs text-gray-500 dark:text-gray-400">{cat === "rajasthan" ? "6 cities" : "3 cities"}</p>
+                        </div>
+                      </div>
+                      <ChevronRight size={16} className={`transition-all ${hoveredCategory === cat ? "text-blue-500 dark:text-yellow-400 translate-x-1" : "text-gray-400"}`} />
                     </div>
                   ))}
                 </div>
+                {/* Cities Grid */}
                 {hoveredCategory && (
-                  <div className="w-56 p-4 grid grid-cols-2 gap-2">
-                    {destinationsMenu[hoveredCategory].map((city) => (
-                      <Link key={city} href={`/destinations/${city}`} className="text-gray-800 dark:text-white hover:text-blue-500 dark:hover:text-yellow-400 transition capitalize">{city}</Link>
-                    ))}
+                  <div className="w-full sm:w-72 p-6 bg-white dark:bg-gray-900">
+                    <p className="text-xs font-bold text-gray-500 dark:text-gray-400 mb-4 uppercase tracking-wide">{hoveredCategory === "rajasthan" ? "Rajasthan Cities" : "Golden Triangle Cities"}</p>
+                    <div className="grid grid-cols-2 gap-3">
+                      {destinationsMenu[hoveredCategory].map((city) => (
+                        <Link key={city} href={`/destinations/${city}`} className="group relative px-4 py-3 rounded-lg bg-gray-50 dark:bg-gray-800 hover:bg-blue-100 dark:hover:bg-blue-900/30 border border-gray-200 dark:border-gray-700 hover:border-blue-400 dark:hover:border-yellow-400 transition-all duration-200 overflow-hidden">
+                          <div className="absolute inset-0 bg-linear-to-r from-blue-500 dark:from-yellow-400 to-transparent opacity-0 group-hover:opacity-10 transition-opacity" />
+                          <p className="relative font-medium text-gray-800 dark:text-white group-hover:text-blue-600 dark:group-hover:text-yellow-400 capitalize text-sm">{city}</p>
+                        </Link>
+                      ))}
+                    </div>
                   </div>
                 )}
               </div>
@@ -114,7 +161,7 @@ export default function Navbar() {
 
           {navLinks.slice(1).map((link) => (
             <li key={link.href}>
-              <Link href={link.href} className={`transition-colors text-sm ${isActive(link.href) ? "text-blue-400 dark:text-yellow-400 border-b-2 border-blue-400 dark:border-yellow-400 pb-1 font-semibold" : "hover:text-blue-400 dark:hover:text-yellow-400"}`}>{link.label}</Link>
+              <Link href={link.href} className={`transition-colors text-base ${isActive(link.href) ? "text-blue-400 dark:text-yellow-400 border-b-2 border-blue-400 dark:border-yellow-400 pb-1 font-semibold" : "hover:text-blue-400 dark:hover:text-yellow-400"}`}>{link.label}</Link>
             </li>
           ))}
         </ul>
@@ -125,14 +172,14 @@ export default function Navbar() {
             <div className="relative" ref={profileRef}>
               <button onClick={() => setProfileOpen(!profileOpen)} className="flex items-center gap-2 px-2 py-1 rounded-full hover:opacity-95 transition">
                 {isAdmin && <Shield size={16} className="text-red-400" />}
-                <div className="bg-yellow-400 text-black px-3 py-1 rounded-full font-semibold shadow-sm text-sm">{initials}</div>
+                <div className="bg-yellow-400 dark:bg-blue-500 text-black dark:text-white px-3 py-1 rounded-full font-semibold shadow-sm text-base">{initials}</div>
                 <ChevronDown size={16} className="text-white/90" />
               </button>
               {profileOpen && (
                 <div className="absolute right-0 mt-2 w-52 bg-gray-900 border border-gray-700 rounded-xl shadow-2xl overflow-hidden">
                   <div className="px-4 py-3 border-b border-gray-700">
-                    <p className="text-white font-medium text-sm">{user.name}</p>
-                    <p className="text-gray-400 text-xs">{user.email}</p>
+                    <p className="text-white font-medium text-base">{user.name}</p>
+                    <p className="text-gray-400 text-sm">{user.email}</p>
                   </div>
                   {isAdmin && (
                     <Link href="/admin" onClick={() => setProfileOpen(false)} className="flex items-center gap-3 px-4 py-3 text-red-400 hover:bg-red-500/10 transition">
@@ -153,8 +200,8 @@ export default function Navbar() {
             </div>
           ) : (
             <div className="flex items-center gap-2">
-              <Link href="/login" className="text-white hover:text-blue-400 dark:hover:text-yellow-400 px-4 py-2 text-sm font-medium transition-colors">Login</Link>
-              <Link href="/signup" className="bg-blue-500 dark:bg-yellow-400 text-white dark:text-black px-5 py-2 rounded-xl font-semibold hover:bg-blue-600 dark:hover:bg-yellow-300 transition text-sm">Sign Up</Link>
+              <Link href="/login" className="text-white hover:text-blue-400 dark:hover:text-yellow-400 px-4 py-2 text-base font-medium transition-colors">Login</Link>
+              <Link href="/signup" className="bg-blue-500 dark:bg-yellow-400 text-white dark:text-black px-5 py-2 rounded-xl font-semibold hover:bg-blue-600 dark:hover:bg-yellow-300 transition text-base">Sign Up</Link>
             </div>
           )}
           <button onClick={toggleTheme} className="p-2 rounded-lg bg-white/10 hover:bg-white/20 text-white transition-all" aria-label="Toggle theme" type="button">

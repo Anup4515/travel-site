@@ -19,15 +19,16 @@ export default function AdminUsersPage() {
   if (loading) return <div className="flex justify-center py-20"><div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-red-500" /></div>;
 
   return (
-    <div>
+    <div className="w-full max-w-full overflow-x-hidden overflow-y-auto">
       <div className="flex items-center justify-between mb-8">
         <h1 className="text-3xl font-bold">Users</h1>
         <span className="bg-gray-100 dark:bg-gray-800 px-4 py-2 rounded-xl text-sm font-medium flex items-center gap-2"><Users size={16} />{users.length} total</span>
       </div>
 
-      <div className="bg-white dark:bg-gray-900 rounded-2xl shadow-sm overflow-hidden">
-        <div className="overflow-x-auto">
-          <table className="w-full">
+      <div className="bg-white dark:bg-gray-900 rounded-2xl shadow-sm w-full max-w-full overflow-hidden">
+        <div className="w-full max-w-full overflow-hidden">
+          <div className="w-full overflow-x-auto pb-1 md:pb-0" style={{ WebkitOverflowScrolling: "touch" }}>
+            <table className="table-auto" style={{ minWidth: "700px" }}>
             <thead className="bg-gray-50 dark:bg-gray-800">
               <tr>
                 <th className="text-left px-6 py-4 text-sm font-medium text-gray-500">User</th>
@@ -65,7 +66,8 @@ export default function AdminUsersPage() {
                 </tr>
               ))}
             </tbody>
-          </table>
+            </table>
+          </div>
         </div>
       </div>
     </div>

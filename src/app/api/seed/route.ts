@@ -28,13 +28,13 @@ const packages = [
 ];
 
 const cabs = [
-  { cabName: "Suzuki Dzire", cabType: "Sedan", maxSeats: 4, pricePerKm: 11, basePrice: 2000, extraHourCharges: 200, features: ["AC", "80km Limit", "Music System"], image: "/images/dzire.jpg" },
-  { cabName: "Toyota Etios", cabType: "Sedan", maxSeats: 4, pricePerKm: 11, basePrice: 2000, extraHourCharges: 200, features: ["AC", "80km Limit", "Comfortable"], image: "/images/etios.jpg" },
-  { cabName: "Toyota Innova", cabType: "SUV", maxSeats: 6, pricePerKm: 16, basePrice: 2400, extraHourCharges: 300, features: ["AC", "Spacious", "Carrier"], image: "/images/innova.jpg" },
-  { cabName: "Toyota Crysta", cabType: "SUV", maxSeats: 7, pricePerKm: 18, basePrice: 3000, extraHourCharges: 350, features: ["Premium AC", "Luxury Seats", "Touchscreen"], image: "/images/crysta.jpg" },
-  { cabName: "Toyota Fortuner", cabType: "Luxury", maxSeats: 7, pricePerKm: 45, basePrice: 6500, extraHourCharges: 700, features: ["VIP Look", "High Safety", "Leather Interior"], image: "/images/fortuner.jpg" },
-  { cabName: "12+1 Tempo Traveller", cabType: "Tempo Traveller", maxSeats: 13, pricePerKm: 24, basePrice: 6000, extraHourCharges: 450, features: ["Pushback Seats", "Music System", "Group Travel"], image: "/images/tempo12.jpg" },
-  { cabName: "16+1 Tempo Traveller", cabType: "Tempo Traveller", maxSeats: 17, pricePerKm: 26, basePrice: 6000, extraHourCharges: 500, features: ["Large Group", "Ample Luggage", "AC"], image: "/images/tempo16.jpg" },
+  { cabName: "Suzuki Dzire", cabType: "Sedan", maxSeats: 4, pricePerKm: 11, basePrice: 2000, extraHourCharges: 200, features: ["AC", "80km Limit", "Music System"], image: "/images/cabs/dzire.jpg" },
+  { cabName: "Toyota Etios", cabType: "Sedan", maxSeats: 4, pricePerKm: 11, basePrice: 2000, extraHourCharges: 200, features: ["AC", "80km Limit", "Comfortable"], image: "/images/cabs/etios.jpg" },
+  { cabName: "Toyota Innova", cabType: "SUV", maxSeats: 6, pricePerKm: 16, basePrice: 2400, extraHourCharges: 300, features: ["AC", "Spacious", "Carrier"], image: "/images/cabs/innova.jpg" },
+  { cabName: "Toyota Crysta", cabType: "SUV", maxSeats: 7, pricePerKm: 18, basePrice: 3000, extraHourCharges: 350, features: ["Premium AC", "Luxury Seats", "Touchscreen"], image: "/images/cabs/crysta.jpg" },
+  { cabName: "Toyota Fortuner", cabType: "Luxury", maxSeats: 7, pricePerKm: 45, basePrice: 6500, extraHourCharges: 700, features: ["VIP Look", "High Safety", "Leather Interior"], image: "/images/cabs/fortuner.jpg" },
+  { cabName: "12+1 Tempo Traveller", cabType: "Tempo Traveller", maxSeats: 13, pricePerKm: 24, basePrice: 6000, extraHourCharges: 450, features: ["Pushback Seats", "Music System", "Group Travel"], image: "/images/cabs/tempo12.jpg" },
+  { cabName: "16+1 Tempo Traveller", cabType: "Tempo Traveller", maxSeats: 17, pricePerKm: 26, basePrice: 6000, extraHourCharges: 500, features: ["Large Group", "Ample Luggage", "AC"], image: "/images/cabs/tempo16.jpg" },
 ];
 
 export async function POST() {
@@ -51,10 +51,13 @@ export async function POST() {
     ]);
 
     // Create admin user if doesn't exist
-    const adminEmail = process.env.ADMIN_EMAIL || "admin12@gmail.com";
-    let admin = await User.findOne({ email: adminEmail });
-    if (!admin) {
-      admin = await User.create({ name: "Admin", email: adminEmail, password: process.env.ADMIN_PASSWORD || "admin", role: "admin", authMethod: "email" });
+    const adminEmail = process.env.ADMIN_EMAIL;
+    const adminPassword = process.env.ADMIN_PASSWORD;
+    if (adminEmail && adminPassword) {
+      let admin = await User.findOne({ email: adminEmail });
+      if (!admin) {
+        admin = await User.create({ name: "Admin", email: adminEmail, password: adminPassword, role: "admin", authMethod: "email" });
+      }
     }
 
     return NextResponse.json({
